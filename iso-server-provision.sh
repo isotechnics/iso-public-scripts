@@ -42,7 +42,7 @@ fi
 # ==========================
 # Initial Configuration
 # ==========================
-apt update
+apt-get update
 
 # Set up iptables-persistent
 log "Installing iptables-persistent..."
