@@ -60,8 +60,12 @@ SSH_AUTOUPDATE_URL="https://raw.githubusercontent.com/isotechnics/ssh-config/ref
 
 read -rp "Install SSH authorized_keys auto-update script? (Y/n): " ssh_choice
 if [[ "$ssh_choice" =~ ^[Yy]?$ ]]; then
-  log "Installing SSH key auto-update..."
-  curl -sL -H "Authorization: Bearer $GITHUB_TOKEN" "$SSH_AUTOUPDATE_URL" | bash
+  log "Downloading and executing SSH key auto-update install script..."
+  TMP_SSH_SCRIPT=$(mktemp)
+  curl -sL -H "Authorization: Bearer $GITHUB_TOKEN" "$SSH_AUTOUPDATE_URL" -o "$TMP_SSH_SCRIPT"
+  chmod +x "$TMP_SSH_SCRIPT"
+  "$TMP_SSH_SCRIPT"
+  rm -f "$TMP_SSH_SCRIPT"
 else
   log "Skipped SSH key auto-update install."
 fi
@@ -73,8 +77,12 @@ NMS_INSTALL_URL="https://raw.githubusercontent.com/isotechnics/iso-nms-agent/ref
 
 read -rp "Install NMS agent? (Y/n): " nms_choice
 if [[ "$nms_choice" =~ ^[Yy]?$ ]]; then
-  log "Installing NMS agent..."
-  curl -sL -H "Authorization: Bearer $GITHUB_TOKEN" "$NMS_INSTALL_URL" | bash
+  log "Downloading and executing NMS agent install script..."
+  TMP_NMS_SCRIPT=$(mktemp)
+  curl -sL -H "Authorization: Bearer $GITHUB_TOKEN" "$NMS_INSTALL_URL" -o "$TMP_NMS_SCRIPT"
+  chmod +x "$TMP_NMS_SCRIPT"
+  "$TMP_NMS_SCRIPT"
+  rm -f "$TMP_NMS_SCRIPT"
 else
   log "Skipped NMS agent install."
 fi
@@ -86,10 +94,12 @@ BACKUP_INSTALL_URL="https://raw.githubusercontent.com/isotechnics/iso-server-bac
 
 read -rp "Install server backup system? (Y/n): " backup_choice
 if [[ "$backup_choice" =~ ^[Yy]?$ ]]; then
-  log "Installing backup system..."
-  curl -sL -H "Authorization: Bearer $GITHUB_TOKEN" "$BACKUP_INSTALL_URL" | bash
+  log "Downloading and executing backup install script..."
+  TMP_BACKUP_SCRIPT=$(mktemp)
+  curl -sL -H "Authorization: Bearer $GITHUB_TOKEN" "$BACKUP_INSTALL_URL" -o "$TMP_BACKUP_SCRIPT"
+  chmod +x "$TMP_BACKUP_SCRIPT"
+  "$TMP_BACKUP_SCRIPT"
+  rm -f "$TMP_BACKUP_SCRIPT"
 else
   log "Skipped backup system install."
 fi
-
-log "Setup complete."
