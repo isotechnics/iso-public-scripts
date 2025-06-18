@@ -66,6 +66,16 @@ if [[ "$ssh_choice" =~ ^[Yy]?$ ]]; then
   chmod +x "$TMP_SSH_SCRIPT"
   "$TMP_SSH_SCRIPT"
   rm -f "$TMP_SSH_SCRIPT"
+  
+  # Disable password authentication if not already disabled
+  if grep -q "^PasswordAuthentication yes" /etc/ssh/sshd_config; then
+    log "Disabling password authentication in SSH config..."
+    sed -i 's/^PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+    systemctl reload ssh
+    log "Password authentication disabled and SSH service reloaded."
+  else
+    log "Password authentication already disabled in SSH config."
+  fi
 else
   log "Skipped SSH key auto-update install."
 fi
