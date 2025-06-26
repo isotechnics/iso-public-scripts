@@ -43,6 +43,8 @@ fi
 # Initial Configuration
 # ==========================
 apt-get update
+# required dependencies
+apt-get -y install jq 
 
 # Set up iptables-persistent
 log "Installing iptables-persistent..."
