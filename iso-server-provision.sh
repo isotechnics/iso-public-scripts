@@ -56,6 +56,45 @@ lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv || log "lvextend failed 
 resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv || log "resize2fs failed or unnecessary"
 
 # ==========================
+# SSH Config for isoadmin User
+# ==========================
+SSH_CONFIG_PATH="/home/isoadmin/.ssh/config"
+SSH_CONFIG_BLOCK="Host *
+  KexAlgorithms +diffie-hellman-group14-sha1,diffie-hellman-group1-sha1
+  Ciphers +aes256-cbc,aes128-cbc
+  HostkeyAlgorithms +ssh-rsa"
+
+log "Setting up SSH config for isoadmin user..."
+
+# Create .ssh directory if it doesn't exist
+if [[ ! -d "/home/isoadmin/.ssh" ]]; then
+  mkdir -p "/home/isoadmin/.ssh"
+  chown isoadmin:isoadmin "/home/isoadmin/.ssh"
+  chmod 700 "/home/isoadmin/.ssh"
+  log "Created /home/isoadmin/.ssh directory"
+fi
+
+# Check if the SSH config block already exists
+if [[ -f "$SSH_CONFIG_PATH" ]] && grep -q "KexAlgorithms +diffie-hellman-group14-sha1" "$SSH_CONFIG_PATH"; then
+  log "SSH config block already exists in $SSH_CONFIG_PATH"
+else
+  # Create or append the SSH config block
+  if [[ ! -f "$SSH_CONFIG_PATH" ]]; then
+    echo "$SSH_CONFIG_BLOCK" > "$SSH_CONFIG_PATH"
+    log "Created new SSH config file with compatibility settings"
+  else
+    echo "" >> "$SSH_CONFIG_PATH"
+    echo "$SSH_CONFIG_BLOCK" >> "$SSH_CONFIG_PATH"
+    log "Appended SSH compatibility settings to existing config"
+  fi
+  
+  # Set proper ownership and permissions
+  chown isoadmin:isoadmin "$SSH_CONFIG_PATH"
+  chmod 600 "$SSH_CONFIG_PATH"
+  log "Set proper ownership and permissions on SSH config"
+fi
+
+# ==========================
 # SSH Auth Key Autoupdate Installation
 # ==========================
 SSH_AUTOUPDATE_URL="https://raw.githubusercontent.com/isotechnics/ssh-config/refs/heads/main/scripts/authorizedkeys_autoupdate_install.sh"
